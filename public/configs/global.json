@@ -1,17 +1,7 @@
 {
     "$schema": "https://raw.githubusercontent.com/reVISit-studies/study/main/src/parser/GlobalConfigSchema.json",
     "configsList": [
-        "html-demo",
-        "image-demo",
-        "html-input",
-        "survey-demo",
-        "cleveland",
-        "click-accuracy-test",
-        "VLAT-full-randomized",
-        "VLAT-mini-randomized",
-        "MVNV",
-        "brush-interactions",
-        "fairness-jnd"
+        "html-input"
     ],
     "configs": {
         "fairness-jnd": {

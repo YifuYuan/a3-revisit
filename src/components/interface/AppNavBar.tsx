@@ -47,7 +47,7 @@ export default function AppNavBar() {
         >
           <Text c="gray.9">
             <Text span c="orange.8" fw={700} inherit>
-              Task:
+              Instruction:
             </Text>
             <ReactMarkdownWrapper text={instruction} />
           </Text>

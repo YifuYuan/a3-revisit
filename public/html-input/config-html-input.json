@@ -1,13 +1,13 @@
 {
     "$schema": "https://raw.githubusercontent.com/reVISit-studies/study/main/src/parser/StudyConfigSchema.json",
     "studyMetadata": {
-        "title": "Passing Data into reVISit from HTML",
+        "title": "Color Dots Visual Experiment",
         "version": "pilot",
         "authors": [
-            "The reVISit Team"
+            " vizvoyager"
         ],
         "date": "2023-04-14",
-        "description": "A demo of how to pass data from HTML into reVISit.",
+        "description": "",
         "organizations": [
             "University of Utah",
             "WPI",
@@ -21,7 +21,7 @@
         "withProgressBar": true,
         "autoDownloadStudy": false,
         "autoDownloadTime": 5000,
-        "sidebar": false
+        "sidebar": true
     },
     "components": {
         "introduction": {
@@ -33,22 +33,22 @@
             "type": "website",
             "response": [
                 {
-                    "id": "barChart",
-                    "prompt": "Your selected answer:",
-                    "required": true,
+                    "id": "game",
+                    "prompt": "",
+                    "required": false,
                     "location": "belowStimulus",
                     "type": "iframe"
                 }
             ],
-            "path": "html-input/bar-chart-interaction.html",
+            "path": "html-input/index.1.html",
             "meta": {
                 "chart": "bar",
                 "AttrNo": 7,
                 "misleading": false
             },
-            "description": "A trial for the user to click the largest bar",
-            "instruction": "Click on the largest bar",
-            "instructionLocation": "aboveStimulus"
+            "description": "[des]",
+            "instruction": "Please hit the start button to start, the color dots will flash about 1 second, then please chose the left/right frame you think has more dots",
+            "instructionLocation": "sidebar"
         }
     },
     "sequence": {

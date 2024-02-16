@@ -1,4 +1,5 @@
 # Introduction
 
-Welcome to our study. This is an example study to show how to embed HTML elements into the study page. 
-In this example, the HTML stimulus communicates with the reVISit study framework to save the clicked bar as the answer, which is also stored in the study provenance.
+The purpose of this visual experiment is to see if color has an effect on how easily people can interpret data. 
+
+After the user clicks a start button, we will show a screen with two frames, each with random scattered color dots inside. After a set amount of time, the dots will disappear, and the user will guess which frame has more dots. The test will be repeated a certain amount of times. 
