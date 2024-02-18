@@ -1,0 +1,61 @@
+{
+    "$schema": "https://raw.githubusercontent.com/reVISit-studies/study/main/src/parser/StudyConfigSchema.json",
+    "studyMetadata": {
+        "title": "Color Dots Visual Experiment",
+        "version": "pilot",
+        "authors": [
+            " vizvoyager"
+        ],
+        "date": "2023-04-14",
+        "description": "",
+        "organizations": [
+            "University of Utah",
+            "WPI",
+            "University of Toronto"
+        ]
+    },
+    "uiConfig": {
+        "contactEmail": "test@test.com",
+        "helpTextPath": "html-input/help.md",
+        "logoPath": "assets/revisitLogoSquare.svg",
+        "withProgressBar": true,
+        "autoDownloadStudy": false,
+        "autoDownloadTime": 5000,
+        "sidebar": true
+    },
+    "components": {
+        "introduction": {
+            "type": "markdown",
+            "path": "html-input/introduction.md",
+            "response": []
+        },
+        "barChart": {
+            "type": "website",
+            "response": [
+                {
+                    "id": "game",
+                    "prompt": "",
+                    "required": false,
+                    "location": "belowStimulus",
+                    "type": "iframe"
+                }
+            ],
+            "path": "html-input/index.1.html",
+            "meta": {
+                "chart": "bar",
+                "AttrNo": 7,
+                "misleading": false
+            },
+            "description": "[des]",
+            "instruction": "Please hit the start button to start, the color dots will flash about 1 second, then please chose the left/right frame you think has more dots",
+            "instructionLocation": "sidebar"
+        }
+    },
+    "sequence": {
+        "order": "fixed",
+        "components": [
+            "introduction",
+            "game"
+        ]
+    }
+}

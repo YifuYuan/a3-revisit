@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Load revisit-communicate to be able to send data to reVISit -->
+    <script src="../js/revisit-communicate.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Circles Game</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+        
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f7f7f7;
+            text-align: center;
+        }
+
+        h1 {
+            margin-top: 30px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .square {
+            width: 300px;
+            height: 300px;
+            display: inline-block;
+            margin: 20px;
+            border: 2px solid #ddd;
+            position: relative;
+        }
+
+        .circle {
+            fill-opacity: 0.7;
+            position: absolute;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .results {
+            margin-top: 30px;
+            text-align: left;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            text-align: center;
+        }
+
+        th {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        td {
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+    <h1>Random Circles Game</h1>
+    <div id="leftSquare" class="square"></div>
+    <div id="rightSquare" class="square"></div>
+    <br>
+    <button id="startButton" onclick="startGame()">Start Game</button>
+    <button id="leftMoreButton" onclick="checkAnswer('left')" style="display:none;">Left More</button>
+    <button id="rightMoreButton" onclick="checkAnswer('right')" style="display:none;">Right More</button>
+    <br>
+    <div id="countdown"></div>
+    <div class="results" style="display: none;">
+        <h2>Results</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Left Box Color</th>
+                    <th>Left Box Number of Circles</th>
+                    <th>Right Box Color</th>
+                    <th>Right Box Number of Circles</th>
+                    <th>User's Answer</th>
+                </tr>
+            </thead>
+            <tbody id="resultsBody">
+                <!-- Results will be inserted here dynamically -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        const taskID = "game";
+        const loc = "belowStimulus";
+        var colorCombinations = [];
+        var colors = ['red', 'blue', 'yellow', 'green', 'black'];
+        var leftNumCircles = 0;
+        var rightNumCircles = 0;
+        var results = [];
+
+        function shuffle(array) {
+            var currentIndex = array.length, randomIndex;
+            while (currentIndex != 0) {
+                randomIndex = Math.floor(Math.random() * currentIndex);
+                currentIndex--;
+                [array[currentIndex], array[randomIndex]] = [
+                    array[randomIndex], array[currentIndex]];
+            }
+            return array;
+        }
+
+        // Generate all possible color combinations
+        for (var i = 0; i < colors.length; i++) {
+            for (var j = 0; j < colors.length; j++) {
+                if (i !== j) {
+                    colorCombinations.push([colors[i], colors[j]]);
+                }
+            }
+        }
+
+        shuffle(colorCombinations); // Shuffle combinations for randomness
+
+        var currentCombinationIndex = 0;
+
+        function createCircles(squareId, color1, numCircles) {
+            var svg = d3.select("#" + squareId).select("svg");
+            if (!svg.empty()) {
+                svg.remove(); // Remove previous circles
+            }
+            
+            svg = d3.select("#" + squareId)
+                .append("svg")
+                .attr("width", 300)
+                .attr("height", 300);
+            
+            for (var i = 0; i < numCircles; i++) {
+                var circle = svg.append("circle")
+                    .attr("cx", Math.random() * 280 + 10)
+                    .attr("cy", Math.random() * 280 + 10)
+                    .attr("r", 5)
+                    .attr("fill", color1) // Assign colors based on squareId
+                    .classed("circle", true);
+            }
+        }
+
+        function startGame() {
+            document.getElementById('startButton').disabled = true;
+            leftNumCircles = Math.floor(Math.random() * 81) + 20;
+            rightNumCircles = Math.floor(Math.random() * 81) + 20;
+            var combination = colorCombinations[currentCombinationIndex];
+            createCircles('leftSquare', combination[0], leftNumCircles);
+            createCircles('rightSquare', combination[1], rightNumCircles);
+            countdown(3);
+        }
+
+        function countdown(seconds) {
+            var countdownDisplay = document.getElementById('countdown');
+            countdownDisplay.innerText = seconds;
+            var countdownInterval = setInterval(function() {
+                seconds--;
+                countdownDisplay.innerText = seconds;
+                if (seconds <= 0) {
+                    clearInterval(countdownInterval);
+                    document.getElementById('leftMoreButton').style.display = 'inline-block';
+                    document.getElementById('rightMoreButton').style.display = 'inline-block';
+                    hideCircles();
+                }
+            }, 1000);
+        }
+
+        function hideCircles() {
+            d3.selectAll('.circle').remove();
+        }
+
+        function checkAnswer(answer) {
+            var leftCount = leftNumCircles;
+            var rightCount = rightNumCircles;
+            results.push({
+                leftColor: colorCombinations[currentCombinationIndex][0],
+                leftCount: leftCount,
+                rightColor: colorCombinations[currentCombinationIndex][1],
+                rightCount: rightCount,
+                userAnswer: answer
+            });
+            currentCombinationIndex++;
+            if (currentCombinationIndex < colorCombinations.length) {
+                startGame();
+            } else {
+                displayResults();
+                document.getElementById('startButton').disabled = false;
+            }
+
+            // Revisit.postAnswers(
+            //     {answer:"left/right", taskID, location:loc}
+            // );
+        }
+
+
+        function displayResults() {
+            var resultsBody = document.getElementById('resultsBody');
+            resultsBody.innerHTML = ''; // Clear previous results
+
+            results.forEach(function(result) {
+                var row = "<tr>";
+                row += "<td>" + result.leftColor + "</td>";
+                row += "<td>" + result.leftCount + "</td>";
+                row += "<td>" + result.rightColor + "</td>";
+                row += "<td>" + result.rightCount + "</td>";
+                row += "<td>" + result.userAnswer + "</td>";
+                row += "</tr>";
+                resultsBody.innerHTML += row;
+            });
+
+            // Show results section
+            document.querySelector('.results').style.display = 'block';
+
+            // Download results as CSV
+            downloadResults();
+            }
+
+        function downloadResults() {
+            // Construct CSV data
+            var csvContent = "data:text/csv;charset=utf-8,";
+            csvContent += "Left Box Color,Left Box Number of Circles,Right Box Color,Right Box Number of Circles,User's Answer\n";
+            results.forEach(function(result) {
+                csvContent += result.leftColor + "," + result.leftCount + "," + result.rightColor + "," + result.rightCount + "," + result.userAnswer + "\n";
+            });
+
+            // Encode CSV data as URI
+            var encodedUri = encodeURI(csvContent);
+
+            // Create link element to trigger download
+            var link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "game_results.csv");
+            document.body.appendChild(link);
+
+            // Trigger download
+            link.click();
+        }
+
+    </script>
+</body>
+</html>
