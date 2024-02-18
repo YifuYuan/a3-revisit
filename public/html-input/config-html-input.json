@@ -55,7 +55,7 @@
         "order": "fixed",
         "components": [
             "introduction",
-            "barChart"
+            "game"
         ]
     }
 }

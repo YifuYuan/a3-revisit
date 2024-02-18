@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Random Circles Game</title>
     <script src="https://d3js.org/d3.v7.min.js"></script>
-    
+        
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -167,7 +167,7 @@
             var combination = colorCombinations[currentCombinationIndex];
             createCircles('leftSquare', combination[0], leftNumCircles);
             createCircles('rightSquare', combination[1], rightNumCircles);
-            countdown(1);
+            countdown(3);
         }
 
         function countdown(seconds) {
@@ -207,9 +207,9 @@
                 document.getElementById('startButton').disabled = false;
             }
 
-            Revisit.postAnswers(
-                {answer:"left/right", taskID, location:loc}
-            );
+            // Revisit.postAnswers(
+            //     {answer:"left/right", taskID, location:loc}
+            // );
         }
 
 
@@ -233,7 +233,7 @@
 
             // Download results as CSV
             downloadResults();
-}
+            }
 
         function downloadResults() {
             // Construct CSV data
@@ -254,7 +254,7 @@
 
             // Trigger download
             link.click();
-}
+        }
 
     </script>
 </body>

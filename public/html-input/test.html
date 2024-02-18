@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firebase Storage Upload Test</title>
+    <script type="module">
+      // Import Firebase modules using ESM syntax
+      import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js';
+      import { getStorage, ref, uploadBytes } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-storage.js';
+
+      // Firebase configuration
+      const firebaseConfig = {
+        apiKey: "AIzaSyDUDbRY3b-ir78ytzFU6WXudkC39_YUgfk",
+            authDomain: "a3-visual-game.firebaseapp.com",
+            projectId: "a3-visual-game",
+            storageBucket: "a3-visual-game.appspot.com",
+            messagingSenderId: "942596293405",
+            appId: "1:942596293405:web:af1a09d457c4da624197f4",
+            measurementId: "G-YQ6XZB9SRE"
+      };
+
+      // Initialize Firebase
+      const app = initializeApp(firebaseConfig);
+      const storage = getStorage(app);
+
+      async function uploadTestFile() {
+          const timestamp = new Date().toISOString().replace(/[^0-9]/g, ""); // Generates a timestamp
+          const fileName = `test_upload_${timestamp}.txt`; // Appends timestamp to filename
+          const testBlob = new Blob(['Hello, Firebase Storage!'], { type: 'text/plain' });
+          const storageRef = ref(storage, fileName); // Uses the timestamped filename
+
+          try {
+              await uploadBytes(storageRef, testBlob);
+              console.log('Upload successful');
+              alert(`Test file uploaded successfully as ${fileName}!`);
+          } catch (error) {
+              console.error("Error uploading file:", error);
+              alert('Upload failed!');
+          }
+      }
+
+      // Event listener to attach function to button click
+      document.addEventListener('DOMContentLoaded', () => {
+          document.getElementById('uploadButton').addEventListener('click', uploadTestFile);
+      });
+    </script>
+</head>
+<body>
+    <button id="uploadButton">Upload Test File</button>
+</body>
+</html>
