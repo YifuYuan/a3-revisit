@@ -80,12 +80,20 @@
 </head>
 <body>
     <h1>Random Circles Game</h1>
+    <div id="usernameSet">
+        <div>
+            <label for="usernameInput">Enter your username:</label>
+            <input type="text" id="usernameInput" placeholder="Username">
+        </div>
+        <button id="setUsernameButton">Set Username</button>
+    </div>
+    <h3 id="usernameDisplay" style="display:none" ></h3>
     <div id="leftSquare" class="square"></div>
     <div id="rightSquare" class="square"></div>
     <br>
-    <button id="startButton" onclick="startGame()">Start Game</button>
-    <button id="leftMoreButton" onclick="checkAnswer('left')" style="display:none;">Left More</button>
-    <button id="rightMoreButton" onclick="checkAnswer('right')" style="display:none;">Right More</button>
+    <button id="startButton" disabled="true">Start Game</button>
+    <button id="leftMoreButton" style="display:none;">Left More</button>
+    <button id="rightMoreButton" style="display:none;">Right More</button>
     <br>
     <div id="countdown"></div>
     <div class="results" style="display: none;">
@@ -106,7 +114,11 @@
         </table>
     </div>
 
-    <script>
+    <script type="module">
+
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
+        import { getDatabase, ref, set, get, child } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js';
+
         const taskID = "game";
         const loc = "belowStimulus";
         var colorCombinations = [];
@@ -114,6 +126,30 @@
         var leftNumCircles = 0;
         var rightNumCircles = 0;
         var results = [];
+
+        document.addEventListener('DOMContentLoaded', (event) => {
+            const startButton = document.getElementById('startButton');
+            startButton.addEventListener('click', startGame);
+
+            const leftMoreButton = document.getElementById('leftMoreButton');
+            leftMoreButton.addEventListener('click', () => checkAnswer('left'));
+
+            const rightMoreButton = document.getElementById('rightMoreButton');
+            rightMoreButton.addEventListener('click', () => checkAnswer('right'));
+
+            const setUsernameButton = document.getElementById('setUsernameButton');
+            setUsernameButton.addEventListener('click', setUserName);
+        });
+
+        var userName = "test"; // Default username, can be overwritten by user input
+        
+        function setUserName() {
+            userName = document.getElementById('usernameInput').value || "test"; // Use input or default to 'test'
+            document.getElementById('startButton').disabled = false; // Enable the start game button after setting username
+            document.getElementById('usernameDisplay').innerText = `Current User ${userName}`;
+            document.getElementById('usernameDisplay').style.display = "block";
+            document.getElementById('usernameSet').style.display = "none";
+        }
 
         function shuffle(array) {
             var currentIndex = array.length, randomIndex;
@@ -167,7 +203,7 @@
             var combination = colorCombinations[currentCombinationIndex];
             createCircles('leftSquare', combination[0], leftNumCircles);
             createCircles('rightSquare', combination[1], rightNumCircles);
-            countdown(3);
+            countdown(0);
         }
 
         function countdown(seconds) {
@@ -232,8 +268,9 @@
             document.querySelector('.results').style.display = 'block';
 
             // Download results as CSV
-            downloadResults();
-            }
+            // downloadResults();
+            uploadToDatabase()
+        }
 
         function downloadResults() {
             // Construct CSV data
@@ -255,6 +292,60 @@
             // Trigger download
             link.click();
         }
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDUDbRY3b-ir78ytzFU6WXudkC39_YUgfk",
+            authDomain: "a3-visual-game.firebaseapp.com",
+            databaseURL: "https://a3-visual-game-default-rtdb.firebaseio.com",
+            projectId: "a3-visual-game",
+            storageBucket: "a3-visual-game.appspot.com",
+            messagingSenderId: "942596293405",
+            appId: "1:942596293405:web:af1a09d457c4da624197f4",
+            measurementId: "G-YQ6XZB9SRE"
+        };
+
+        function uploadToDatabase() {
+            // Initialize Firebase
+            const app = initializeApp(firebaseConfig);
+            const database = getDatabase();
+
+            // Get a reference to the user's results path
+            const userResultsPath = `results/${userName}`;
+            const userResultsRef = ref(database, userResultsPath);
+
+            // Read the current latest index
+            get(child(userResultsRef, 'latestIndex')).then((snapshot) => {
+                let newIndex;
+                if (snapshot.exists()) {
+                    // If there's an existing latest index, increment it by 1
+                    const latestIndex = snapshot.val();
+                    newIndex = latestIndex + 1;
+                } else {
+                    // If there's no latest index, start with 1
+                    newIndex = 1;
+                }
+
+                // Create a new path with the incremented index
+                const newDataRef = ref(database, `${userResultsPath}/${newIndex}`);
+
+                // Upload the data to the new path
+                set(newDataRef, results).then(() => {
+                    console.log("Data uploaded successfully!");
+
+                    // Update the latest index
+                    const latestIndexRef = ref(database, `${userResultsPath}/latestIndex`);
+                    set(latestIndexRef, newIndex).catch((error) => {
+                        console.error("Failed to update latest index: ", error);
+                    });
+
+                }).catch((error) => {
+                    console.error("Failed to upload data: ", error);
+                });
+            }).catch((error) => {
+                console.error("Failed to read latest index: ", error);
+            });
+        }
+
 
     </script>
 </body>
